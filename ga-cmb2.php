@@ -89,7 +89,7 @@ function upcoming_events($text){
 		),
 	);
 
-	echo "<h2 class='text-center'>" . $text['text'] .  "</h2>";
+	echo "<h2 class='text-center events-title'>" . $text['text'] .  "</h2>";
 
 	echo "<ul class='list-events no-bullet'>";
 
@@ -99,20 +99,32 @@ function upcoming_events($text){
 
 		echo "<li>";
 		echo the_title('<h3 class="text-center">', '</h3>');
-		echo get_the_term_list($post->ID, 'type_event', 'Type: ', ', ', '');
-		echo "<p><b>Seats Available: </b>" . get_post_meta(get_the_ID(), 'ga_fields_events_seats', true) . "</p>";
-		echo "<p><b>City: </b>" . get_post_meta(get_the_ID(), 'ga_fields_events_city', true) . "</p>";
 
-		$dateEvent = get_post_meta(get_the_ID(), 'ga_fields_events_date', true);
-		echo "<p class='date-event'><b>Date: </b>" . gmdate('d-m-Y', $dateEvent) . " <b>Time: " . gmdate('H:i', $dateEvent) . "</b></p>";
+		echo "<div class='row'>";
+		echo "<div class='medium-6 columns'>";
+		echo "<div class='event-info'>";
 
+			echo "<p>" . get_the_term_list($post->ID, 'type_event', '<b>Type: </b>', ', ', '') . "</p>";
+			echo "<p><b>Seats Available: </b>" . get_post_meta(get_the_ID(), 'ga_fields_events_seats', true) . "</p>";
+			echo "<p><b>City: </b>" . get_post_meta(get_the_ID(), 'ga_fields_events_city', true) . "</p>";
+
+			$dateEvent = get_post_meta(get_the_ID(), 'ga_fields_events_date', true);
+			echo "<p class='date-event'><b>Date: </b>" . gmdate('d-m-Y', $dateEvent) . " <b>Time: </b>" . gmdate('H:i', $dateEvent) . "</b></p>";
+
+		echo "</div>";
+		echo "</div>";
+
+		echo "<div class='medium-6 columns agenda'>";
 		echo "<h4 class='text-center'>Agenda of the Event: </h4>";
 
-		$agenda = get_post_meta(get_the_ID(), 'ga_fields_events_program', true);
+			$agenda = get_post_meta(get_the_ID(), 'ga_fields_events_program', true);
 
-		foreach($agenda as $a){
-			echo "<p>" . $a . "</p>";
-		}
+			foreach($agenda as $a){
+				echo "<p>" . $a . "</p>";
+			}
+
+		echo "</div>";
+		echo "</div>";
 
 		echo "</li>";
 	endwhile;
@@ -146,7 +158,7 @@ function past_events($text){
 		),
 	);
 
-	echo "<h2 class='text-center'>" . $text['text'] .  "</h2>";
+	echo "<h2 class='text-center events-title'>" . $text['text'] .  "</h2>";
 
 	echo "<ul class='list-events no-bullet'>";
 
@@ -156,20 +168,32 @@ function past_events($text){
 
 		echo "<li>";
 		echo the_title('<h3 class="text-center">', '</h3>');
-		echo get_the_term_list($post->ID, 'type_event', 'Type: ', ', ', '');
-		echo "<p><b>Seats Available: </b>" . get_post_meta(get_the_ID(), 'ga_fields_events_seats', true) . "</p>";
-		echo "<p><b>City: </b>" . get_post_meta(get_the_ID(), 'ga_fields_events_city', true) . "</p>";
 
-		$dateEvent = get_post_meta(get_the_ID(), 'ga_fields_events_date', true);
-		echo "<p class='date-event'><b>Date: </b>" . gmdate('d-m-Y', $dateEvent) . " <b>Time: " . gmdate('H:i', $dateEvent) . "</b></p>";
+		echo "<div class='row'>";
+		echo "<div class='medium-6 columns'>";
+		echo "<div class='event-info'>";
 
+			echo get_the_term_list($post->ID, 'type_event', 'Type: ', ', ', '');
+			echo "<p><b>Seats Available: </b>" . get_post_meta(get_the_ID(), 'ga_fields_events_seats', true) . "</p>";
+			echo "<p><b>City: </b>" . get_post_meta(get_the_ID(), 'ga_fields_events_city', true) . "</p>";
+
+			$dateEvent = get_post_meta(get_the_ID(), 'ga_fields_events_date', true);
+			echo "<p class='date-event'><b>Date: </b>" . gmdate('d-m-Y', $dateEvent) . " <b>Time: " . gmdate('H:i', $dateEvent) . "</b></p>";
+
+		echo "</div>";
+		echo "</div>";
+
+		echo "<div class='medium-6 columns agenda'>";
 		echo "<h4 class='text-center'>Agenda of the Event: </h4>";
 
-		$agenda = get_post_meta(get_the_ID(), 'ga_fields_events_program', true);
+			$agenda = get_post_meta(get_the_ID(), 'ga_fields_events_program', true);
 
-		foreach($agenda as $a){
-			echo "<p>" . $a . "</p>";
-		}
+			foreach($agenda as $a){
+				echo "<p>" . $a . "</p>";
+			}
+
+		echo "</div>";
+		echo "</div>";
 
 		echo "</li>";
 	endwhile;
@@ -178,3 +202,15 @@ function past_events($text){
 	echo "</ul>";
 }
 add_shortcode('past-events', 'past_events');
+
+
+/*
+****************************************
+* CSS FILE
+****************************************
+*/
+function ga_metaboxes_css(){
+	wp_register_style('metaboxes-css', plugins_url('ga-cmb2/css/ga-cmb2-styles.css'));
+	wp_enqueue_style('metaboxes-css');
+}
+add_action('wp_enqueue_scripts', 'ga_metaboxes_css');
