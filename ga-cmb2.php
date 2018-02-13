@@ -14,6 +14,11 @@ if( file_exists(dirname( __FILE__ ) . '/CMB2/init.php') ){
 	require_once dirname( __FILE__ ) . '/CMB2/init.php';
 }
 
+/*
+****************************************
+* FIELDS CREATION
+****************************************
+*/
 
 function metaboxes_events_cmb2(){
 	$prefix = 'ga_fields_events_';
@@ -61,3 +66,115 @@ add_action('cmb2_admin_init', 'metaboxes_events_cmb2');
 
 
 
+/*
+****************************************
+* PRINT UPCOMING EVENTS
+****************************************
+*/
+
+function upcoming_events($text){
+	$args = array(
+		'post_type'		 => 'events',
+		'orderby'		 => 'meta_value',
+		'meta_key'		 => 'ga_fields_events_date',
+		'order'			 => 'ASC',
+		'posts_per_page' =>	-1, // -1 permet d'afficher tous les posts
+		'meta_query'	 => array(
+			array(
+				'key' 	=> 'ga_fields_events_date',
+				'value' => time(),
+				'compare' => '>=',
+				'type'  => 'NUMERIC'
+			)
+		),
+	);
+
+	echo "<h2 class='text-center'>" . $text['text'] .  "</h2>";
+
+	echo "<ul class='list-events no-bullet'>";
+
+	$events = new WP_Query($args);
+
+	while($events->have_posts()) : $events->the_post();
+
+		echo "<li>";
+		echo the_title('<h3 class="text-center">', '</h3>');
+		echo get_the_term_list($post->ID, 'type_event', 'Type: ', ', ', '');
+		echo "<p><b>Seats Available: </b>" . get_post_meta(get_the_ID(), 'ga_fields_events_seats', true) . "</p>";
+		echo "<p><b>City: </b>" . get_post_meta(get_the_ID(), 'ga_fields_events_city', true) . "</p>";
+
+		$dateEvent = get_post_meta(get_the_ID(), 'ga_fields_events_date', true);
+		echo "<p class='date-event'><b>Date: </b>" . gmdate('d-m-Y', $dateEvent) . " <b>Time: " . gmdate('H:i', $dateEvent) . "</b></p>";
+
+		echo "<h4 class='text-center'>Agenda of the Event: </h4>";
+
+		$agenda = get_post_meta(get_the_ID(), 'ga_fields_events_program', true);
+
+		foreach($agenda as $a){
+			echo "<p>" . $a . "</p>";
+		}
+
+		echo "</li>";
+	endwhile;
+	wp_reset_postdata();
+
+	echo "</ul>";
+}
+add_shortcode('upcoming-events', 'upcoming_events');
+
+
+/*
+****************************************
+* PAST EVENTS
+****************************************
+*/
+
+function past_events($text){
+	$args = array(
+		'post_type'		 => 'events',
+		'orderby'		 => 'meta_value',
+		'meta_key'		 => 'ga_fields_events_date',
+		'order'			 => 'ASC',
+		'posts_per_page' =>	-1, // -1 permet d'afficher tous les posts
+		'meta_query'	 => array(
+			array(
+				'key' 	=> 'ga_fields_events_date',
+				'value' => time(),
+				'compare' => '<=',
+				'type'  => 'NUMERIC'
+			)
+		),
+	);
+
+	echo "<h2 class='text-center'>" . $text['text'] .  "</h2>";
+
+	echo "<ul class='list-events no-bullet'>";
+
+	$events = new WP_Query($args);
+
+	while($events->have_posts()) : $events->the_post();
+
+		echo "<li>";
+		echo the_title('<h3 class="text-center">', '</h3>');
+		echo get_the_term_list($post->ID, 'type_event', 'Type: ', ', ', '');
+		echo "<p><b>Seats Available: </b>" . get_post_meta(get_the_ID(), 'ga_fields_events_seats', true) . "</p>";
+		echo "<p><b>City: </b>" . get_post_meta(get_the_ID(), 'ga_fields_events_city', true) . "</p>";
+
+		$dateEvent = get_post_meta(get_the_ID(), 'ga_fields_events_date', true);
+		echo "<p class='date-event'><b>Date: </b>" . gmdate('d-m-Y', $dateEvent) . " <b>Time: " . gmdate('H:i', $dateEvent) . "</b></p>";
+
+		echo "<h4 class='text-center'>Agenda of the Event: </h4>";
+
+		$agenda = get_post_meta(get_the_ID(), 'ga_fields_events_program', true);
+
+		foreach($agenda as $a){
+			echo "<p>" . $a . "</p>";
+		}
+
+		echo "</li>";
+	endwhile;
+	wp_reset_postdata();
+
+	echo "</ul>";
+}
+add_shortcode('past-events', 'past_events');
